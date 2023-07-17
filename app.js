@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
         squares[pacmanCurrentIndex].classList.add('pac-man')
     
         pacDotEaten()
-        // powerPalletEaten()
+        powerPelletEaten()
         // checkForGameOver()
         // checkForWin()
     
@@ -143,6 +143,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    //what happens when you eat a power-pellet
+    function powerPelletEaten() {
+        if ( squares[pacmanCurrentIndex].classList.contains('power-pellet') ) {
+        score +=10
+        ghosts.forEach(ghost => ghost.isScared = true)
+        setTimeout(unScareGhosts, 10000)
+        squares[pacmanCurrentIndex].classList.remove('power-pellet')
+        }
+    }
+
+    //make the ghosts stop flashing
+    function unScareGhosts() {
+        ghosts.forEach(ghost => ghost.isScared = false)
+    }
+
     /// create our Ghost template
     class Ghost {
 
@@ -152,6 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.speed = speed
             this.currentIndex = startIndex 
             this.timerId = NaN
+            this.isScared = false
         }
 
     }
@@ -166,7 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
     //  draw my ghost onto the grid
     ghosts.forEach(ghost => {
         squares[ghost.currentIndex].classList.add(ghost.className)
-        sqauer[ghost.currentIndex].classList.add('ghost')
+        squares[ghost.currentIndex].classList.add('ghost')
     })
 
     // move the ghosts randomly
@@ -175,7 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // write the fucniton to move the ghosts
     function moveGhost(ghost) {
         const directions = [-1, +1, width, -width]
-        let direction = directions[Math.floor(Math.random() * direction.length) ]
+        let direction = directions[Math.floor(Math.random() * directions.length) ]
 
         ghost.timerId = setInterval(function(){
 
@@ -193,6 +209,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
             //else find a new random direction ot go in
         } else direction = directions[Math.floor(Math.random() * directions.length)]
+
+        // if the ghost is currently scared
+        if ( ghost.isScared ) {
+            
+            squares[ghost.currentIndex].classList.add('scared-ghost')
+        }
+
+        //if the ghost is currently scared and pacman is on it
+        if(ghost.isScared && squares[ghost.currentIndex].classList.contains('pac-man')) {
+
+            squares[ghost.currentIndex].classList.remove(ghost.className, 'ghost', 'scared-ghost')
+            ghost.currentIndex = ghost.startIndex
+            score +=100
+            squares[ghost.currentIndex].classList.add(ghost.className, 'ghost')
+        }
+        checkForGameOver()            
 
         }, ghost.speed )
     }

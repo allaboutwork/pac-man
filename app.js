@@ -142,4 +142,58 @@ document.addEventListener('DOMContentLoaded', () => {
             squares[pacmanCurrentIndex].classList.remove('pac-dot')
         }
     }
+
+    /// create our Ghost template
+    class Ghost {
+
+        constructor(className, startIndex, speed){
+            this.className = className
+            this.startIndex = startIndex
+            this.speed = speed
+            this.currentIndex = startIndex 
+            this.timerId = NaN
+        }
+
+    }
+
+    ghosts = [
+        new Ghost('blinky', 348, 250),
+        new Ghost('pinky', 376, 400),
+        new Ghost('inky', 351, 300),
+        new Ghost('clyde', 379, 500)
+    ]
+    
+    //  draw my ghost onto the grid
+    ghosts.forEach(ghost => {
+        squares[ghost.currentIndex].classList.add(ghost.className)
+        sqauer[ghost.currentIndex].classList.add('ghost')
+    })
+
+    // move the ghosts randomly
+    ghosts.forEach(ghost => moveGhost(ghost))
+
+    // write the fucniton to move the ghosts
+    function moveGhost(ghost) {
+        const directions = [-1, +1, width, -width]
+        let direction = directions[Math.floor(Math.random() * direction.length) ]
+
+        ghost.timerId = setInterval(function(){
+
+        // if the next square your ghost is going to go does not have a a ghost and does not have a wall
+        if  (!squares[ghost.currentIndex + direction].classList.contains('ghost') &&
+            !squares[ghost.currentIndex + direction].classList.contains('wall') ) {
+          
+            //remove the ghosts classes
+            squares[ghost.currentIndex].classList.remove(ghost.className)
+            squares[ghost.currentIndex].classList.remove('ghost', 'scared-ghost')
+
+            //move into that space
+            ghost.currentIndex += direction
+            squares[ghost.currentIndex].classList.add(ghost.className, 'ghost')
+
+            //else find a new random direction ot go in
+        } else direction = directions[Math.floor(Math.random() * directions.length)]
+
+        }, ghost.speed )
+    }
 })
